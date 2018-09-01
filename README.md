@@ -11,6 +11,34 @@ Now Personae includes 4 RL & 3 SL implements and a simulate Financial Market sup
 
 More RL & SL methods are updating!
 
+# Getting Start
+
+Clone Project
+
+```
+git clone https://github.com/Ceruleanacg/Personae.git
+cd Personae
+```
+
+Start with docker
+
+```
+sudo docker image build -t ppdemo .
+```
+
+Start & Connect Mongo
+
+```
+sudo docker run --name my_mongo -p 27017:27017 -d mongo
+sudo docker run -t --link my_mongo:mongo -v $PWD:/app/Personae ppdemo spider/stock_spider.py
+```
+
+Run Algorithm
+
+```
+sudo nvidia-docker run -t --link my_mongo:mongo -v $PWD:/app/Personae ppdemo algorithm/SL/DualAttnRNN.py
+```
+
 # WARNING
 
 This repo is being reconstructing,
