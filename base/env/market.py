@@ -106,7 +106,7 @@ class Market(object):
         except KeyError:
             scaler = StandardScaler
 
-        self.state_codes = self.codes + self.index_codes
+        self.state_codes = self.codes  # + self.index_codes
         self.scaler = [scaler() for _ in self.state_codes]
         self.trader = Trader(self, cash=self.init_cash)
         self.doc_class = Stock if self.m_type == 'stock' else Future

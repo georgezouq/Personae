@@ -13,6 +13,8 @@ More RL & SL methods are updating!
 
 # Getting Start
 
+## Setup
+
 Clone Project
 
 ```
@@ -20,7 +22,7 @@ git clone https://github.com/Ceruleanacg/Personae.git
 cd Personae
 ```
 
-Start with docker
+### Start with docker
 
 ```
 sudo docker image build -t ppdemo .
@@ -37,6 +39,34 @@ Run Algorithm
 
 ```
 sudo nvidia-docker run -t --link my_mongo:mongo -v $PWD:/app/Personae ppdemo algorithm/SL/DualAttnRNN.py
+```
+
+### Start with Conda
+
+First you need set `Python Path`
+
+```
+export PYTHONPATH=.
+```
+
+Then run algorithm you want
+
+```
+python ./algorithm/SL/DualAttnRNN.py
+```
+
+You can find result at `checkpoints/SL/DualAttnRNN/stock`
+
+## Run Strategy
+
+```
+rqalpha run 
+    -f ./strategy/SL/DualAttnRNN/DualAttnRNN.py 
+    -s 2014-01-01 
+    -e 2015-01-01 
+    -o result.pkl 
+    --plot --progress --account 
+    stock 100000
 ```
 
 # WARNING
