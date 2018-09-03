@@ -115,5 +115,5 @@ def main(args):
     algorithm.eval_and_plot()
 
 
-if __name__ == '__main__':
-    main(model_launcher_parser.parse_args())
+# if __name__ == '__main__':
+#     main(model_launcher_parser.parse_args())

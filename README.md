@@ -69,6 +69,12 @@ rqalpha run
     stock 100000
 ```
 
+OR
+
+```
+python ./strategy/SL/DualAttnRNN/DualAttnRNN.py 
+```
+
 # WARNING
 
 This repo is being reconstructing,

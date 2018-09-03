@@ -14,7 +14,7 @@ from checkpoints import CHECKPOINTS_DIR
 
 # 在这个方法中编写任何的初始化逻辑。context对象将会在你的算法策略的任何方法之间做传递。
 def init(context):
-    context.s1 = '600036'
+    context.s1 = '600036.XSHG'
     update_universe(context.s1)
     context.has_save_data = False
 
@@ -25,7 +25,7 @@ def init(context):
 
     base = config.get('base')
 
-    codes = [context.s1]
+    codes = ['600036']
     env = Market(codes, start_date=base.get('start_date'), end_date=base.get('end_date'), **{
         "market": market,
         "use_sequence": True,
@@ -34,7 +34,7 @@ def init(context):
         "training_data_ratio": training_data_ratio
     })
 
-    model_name = os.path.basename(__file__).split('.')[0]
+    model_name = 'DualAttnRNN'  # os.path.basename(__file__).split('.')[0]
 
     context.algorithm = Algorithm(
         tf.Session(config=alg_config), env, env.seq_length, env.data_dim, env.code_count, **{
@@ -56,7 +56,11 @@ def before_trading(context):
 
 # 你选择的证券的数据更新将会触发此段逻辑，例如日或分钟历史数据切片或者是实时数据切片更新
 def handle_bar(context, bar_dict):
-    print('bar_dict:', bar_dict)
+    s1 = bar_dict[context.s1]
+    price = [s1.open, s1.high, s1.low, s1.close, s1.volume]
+
+    print('bar_dict price:', price)
+    # predict = context.algorithm.predict()
     pass
 
 
