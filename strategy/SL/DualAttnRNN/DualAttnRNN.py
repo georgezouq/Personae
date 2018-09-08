@@ -36,6 +36,8 @@ def init(context):
 
     model_name = 'DualAttnRNN'  # os.path.basename(__file__).split('.')[0]
 
+    context.bar_list = []
+    context.scale = MinMaxScaler()
     context.algorithm = Algorithm(
         tf.Session(config=alg_config), env, env.seq_length, env.data_dim, env.code_count, **{
             "mode": mode,
@@ -58,9 +60,13 @@ def before_trading(context):
 def handle_bar(context, bar_dict):
     s1 = bar_dict[context.s1]
     price = [s1.open, s1.high, s1.low, s1.close, s1.volume]
+    context.bar_list.append(price)
 
-    print('bar_dict price:', price)
-    # predict = context.algorithm.predict()
+    scale = context.scale.fit(context.bar_list)
+    price_scaled = scale.transform([price])
+
+    predict = context.algorithm.predict(price_scaled)
+
     pass
 
 
