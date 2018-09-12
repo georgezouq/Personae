@@ -5,7 +5,8 @@ from sklearn.preprocessing import MinMaxScaler
 
 from strategy import config
 from algorithm.RL.DoubleDQN import Algorithm
-from deprecated.stock_market import ActionCode
+from base.env.trader import ActionCode
+
 
 # 在这个方法中编写任何的初始化逻辑。context对象将会在你的算法策略的任何方法之间做传递。
 def init(context):
@@ -13,21 +14,13 @@ def init(context):
     update_universe(context.s1)
     context.has_save_data = False
 
-    mode = 'run'
-    market = 'stock'
-    training_data_ratio = 0.9
-    train_steps = 10000
-    episode = 3000
-
     base = config.get('base')
-
-    context.s1 = '600036'
 
     context.bar_list_origin = []
     context.bar_list = []
     context.scale = MinMaxScaler()
 
-    context.algorithm = Algorithm.generator(context.s, base.get('start_date'), base.get('end_date'))
+    context.algorithm = Algorithm.generator([context.s1.split('.')[0]], base.get('start_date'), base.get('end_date'))
     context.algorithm.run()
 
     subscribe(context.s1)

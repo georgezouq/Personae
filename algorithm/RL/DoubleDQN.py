@@ -8,7 +8,6 @@ from algorithm import config
 from base.env.market import Market
 from checkpoints import CHECKPOINTS_DIR
 from base.algorithm.model import BaseRLTFModel
-from helper.args_parser import model_launcher_parser
 from helper.data_logger import generate_algorithm_logger, generate_market_logger
 
 
@@ -44,18 +43,29 @@ class Algorithm(BaseRLTFModel):
             "training_data_ratio": training_data_ratio,
         })
 
-        return Algorithm(
-            tf.Session(config=config), env, env.seq_length, env.data_dim, env.code_count, **{
-                "mode": mode,
-                "episodes": episode,
-                "enable_saver": True,
-                "learning_rate": 0.003,
-                "enable_summary_writer": True,
-                "logger": generate_algorithm_logger(model_name),
-                "save_path": os.path.join(CHECKPOINTS_DIR, "RL", model_name, market, "model"),
-                "summary_path": os.path.join(CHECKPOINTS_DIR, "RL", model_name, market, "summary"),
-            }
-        )
+        return Algorithm(tf.Session(config=config), env, env.trader.action_space, env.data_dim, **{
+            "mode": mode,
+            "episodes": episode,
+            "enable_saver": True,
+            "learning_rate": 0.003,
+            "enable_summary_writer": True,
+            "logger": generate_algorithm_logger(model_name),
+            "save_path": os.path.join(CHECKPOINTS_DIR, "RL", model_name, market, "model"),
+            "summary_path": os.path.join(CHECKPOINTS_DIR, "RL", model_name, market, "summary"),
+        })
+
+        # return Algorithm(
+        #     tf.Session(config=config), env, env.seq_length, env.data_dim, env.code_count, **{
+        #         "mode": mode,
+        #         "episodes": episode,
+        #         "enable_saver": True,
+        #         "learning_rate": 0.003,
+        #         "enable_summary_writer": True,
+        #         "logger": generate_algorithm_logger(model_name),
+        #         "save_path": os.path.join(CHECKPOINTS_DIR, "RL", model_name, market, "model"),
+        #         "summary_path": os.path.join(CHECKPOINTS_DIR, "RL", model_name, market, "summary"),
+        #     }
+        # )
 
     def _init_input(self, *args):
         self.s = tf.placeholder(tf.float32, [None, self.s_space])
@@ -174,8 +184,8 @@ class Algorithm(BaseRLTFModel):
 
 
 def main(args):
-    mode = args.mode
-    # mode = 'test'
+    # mode = args.mode
+    mode = 'test'
     codes = args.codes
     # codes = ["AU88", "RB88", "CU88", "AL88"]
     # codes = ["T9999"]
@@ -209,5 +219,5 @@ def main(args):
     algorithm.plot()
 
 
-if __name__ == '__main__':
-    main(model_launcher_parser.parse_args())
+# if __name__ == '__main__':
+#     main(model_launcher_parser.parse_args())
