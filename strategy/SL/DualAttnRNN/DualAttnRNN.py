@@ -1,6 +1,7 @@
 import rqalpha
 import os
 import tensorflow as tf
+import numpy as np
 
 from rqalpha.api import *
 from sklearn.preprocessing import MinMaxScaler
@@ -36,6 +37,7 @@ def init(context):
 
     model_name = 'DualAttnRNN'  # os.path.basename(__file__).split('.')[0]
 
+    context.bar_list_origin = []
     context.bar_list = []
     context.scale = MinMaxScaler()
     context.algorithm = Algorithm(
@@ -60,13 +62,27 @@ def before_trading(context):
 def handle_bar(context, bar_dict):
     s1 = bar_dict[context.s1]
     price = [s1.open, s1.high, s1.low, s1.close, s1.volume]
-    context.bar_list.append(price)
+    context.bar_list_origin.append(price)
 
-    scale = context.scale.fit(context.bar_list)
+    scale = context.scale.fit(context.bar_list_origin)
     price_scaled = scale.transform([price])
+    context.bar_list.append(price_scaled[0])
 
-    predict = context.algorithm.predict(price_scaled)
+    # if not enough bar
+    if len(context.bar_list) < context.algorithm.seq_length * 2 + 2:
+        return
 
+    # frm = len(context.bar_list)-context.algorithm.seq_length
+    x1 = context.bar_list[-context.algorithm.seq_length*2:-context.algorithm.seq_length]
+    x2 = context.bar_list[-context.algorithm.seq_length:]
+
+    x = [x1, x2]
+    c, a, _ = context.algorithm.predict(x)
+    res = np.append(_, [0, 0, 0, 0])
+    predict = scale.inverse_transform([res])
+
+    predict = scale.inverse_transform([res])
+    print('predict', predict)
     pass
 
 
