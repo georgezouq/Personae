@@ -8,10 +8,11 @@ from algorithm import config
 from base.env.market import Market
 from checkpoints import CHECKPOINTS_DIR
 from base.algorithm.model import BaseRLTFModel
+from helper.args_parser import model_launcher_parser
 from helper.data_logger import generate_algorithm_logger, generate_market_logger
 
 
-model_name = os.path.basename(__file__).split('.')[0]
+model_name = "DoubleDQN"  # os.path.basename(__file__).split('.')[0]
 
 
 class Algorithm(BaseRLTFModel):
@@ -184,8 +185,8 @@ class Algorithm(BaseRLTFModel):
 
 
 def main(args):
-    # mode = args.mode
-    mode = 'test'
+    mode = args.mode
+    # mode = 'test'
     codes = args.codes
     # codes = ["AU88", "RB88", "CU88", "AL88"]
     # codes = ["T9999"]
@@ -219,5 +220,5 @@ def main(args):
     algorithm.plot()
 
 
-# if __name__ == '__main__':
-#     main(model_launcher_parser.parse_args())
+if __name__ == '__main__':
+    main(model_launcher_parser.parse_args())
