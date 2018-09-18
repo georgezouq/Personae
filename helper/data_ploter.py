@@ -15,8 +15,8 @@ def plot_stock_series(codes, y, label, save_path, y_desc='Predict', label_desc='
         # plt.plot(y[:, index], 'o-', label=y_desc)
         # plt.plot(label[:, index], 'o-', label=label_desc)
         plt.legend(loc='upper left')
-    plt.show()
-    # plt.savefig(save_path, dpi=200)
+    # plt.show()
+    plt.savefig(save_path, dpi=200)
 
 
 def plot_profits_series(base, profits, save_path):

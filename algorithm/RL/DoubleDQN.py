@@ -87,6 +87,46 @@ class Algorithm(BaseRLTFModel):
         self.update_q_target_op = [tf.assign(t, e) for t, e in zip(self.t_params, self.e_params)]
         self.session.run(tf.global_variables_initializer())
 
+    # TODO: Finish train at live trade
+    """
+    Train at live trade
+    
+    X: prev parameter
+    Y: current parameter
+    """
+    def live_train(self, x, y):
+        # 1. If buffer length is less than buffer size, return.
+        if self.buffer_length < self.buffer_size:
+            return
+        # 2. Update Q-Target if need.
+        if self.total_step % self.update_q_target_step == 0:
+            self.session.run(self.update_q_target_op)
+
+        # 3. Get transition batch.
+        s, a, r, s_next = self.get_transition_batch()
+
+        # 4. Calculate q_eval_next.
+        q_eval_next = self.session.run(self.q_eval, {self.s: s_next})
+
+        # 5. Get action indices and make batch indices.
+        a_indices = np.argmax(q_eval_next, axis=1)
+        b_indices = np.arange(self.batch_size, dtype=np.int)
+
+        # 6. Calculate q_target_next selected by actions.
+        q_target_next = self.session.run(self.q_target, {self.s_next: s_next})
+        q_target_next_with_a = q_target_next[b_indices, a_indices]
+
+        # 7. Calculate labels.
+        q_eval = self.session.run(self.q_eval, {self.s: s})
+        q_next = q_eval.copy()
+        q_next[b_indices, a.astype(np.int)] = r + self.gamma * q_target_next_with_a
+
+        # 8. Calculate loss.
+        _, self.critic_loss = self.session.run([self.train_op, self.loss], {self.s: s, self.q_next: q_next})
+
+        # 9. Increase total step.
+        self.total_step += 1
+
     def train(self):
         # 1. If buffer length is less than buffer size, return.
         if self.buffer_length < self.buffer_size:
@@ -185,8 +225,8 @@ class Algorithm(BaseRLTFModel):
 
 
 def main(args):
-    mode = args.mode
-    # mode = 'test'
+    # mode = args.mode
+    mode = 'test'
     codes = args.codes
     # codes = ["AU88", "RB88", "CU88", "AL88"]
     # codes = ["T9999"]
@@ -220,5 +260,5 @@ def main(args):
     algorithm.plot()
 
 
-if __name__ == '__main__':
-    main(model_launcher_parser.parse_args())
+# if __name__ == '__main__':
+#     main(model_launcher_parser.parse_args())

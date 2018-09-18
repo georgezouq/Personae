@@ -45,7 +45,7 @@ def _get_portfolio_state(context):
             portfolio.append(0.0)
             continue
 
-        portfolio.append(context.portfolio.accounts.STOCK[code] / context.account_amount)
+        portfolio.append(context.portfolio.accounts.get('STOCK').positions.get(code).quantity / context.account_amount)
 
     return portfolio
 
@@ -76,17 +76,18 @@ def handle_bar(context, bar_dict):
         return
 
     c, a, _ = context.algorithm.predict(s)
+    context.algorithm.train()
     # s_next, r, status, info = context.algorithm.env.forward(c, a)
 
     code = c + '.XSHG'
 
-    if a == ActionCode.Buy:
-        order(code, 0.10)
-        buy_open(code, 100)
+    if a == ActionCode.Buy.value:
+        # order(code, 0.10)
+        order_percent(code, 0.2)
         print('Buy Signal:', code)
 
-    elif a == ActionCode.Sell:
-        buy_open(code, 0)
+    elif a == ActionCode.Sell.value:
+        order_percent(code, 0)
         print('Sell Signal:', code)
 
 
