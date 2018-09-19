@@ -163,6 +163,10 @@ class Algorithm(BaseRLTFModel):
     def predict(self, s):
         q = self.session.run(self.q_eval, {self.s: s})
         a = np.argmax(q)
+
+        if not a == 9:
+            print('NOT 9:', a)
+
         return self.get_stock_code_and_action(a, use_greedy=True, use_prob=True if self.mode == 'train' else False)
 
     def save_transition(self, s, a, r, s_next):
@@ -260,5 +264,5 @@ def main(args):
     algorithm.plot()
 
 
-# if __name__ == '__main__':
-#     main(model_launcher_parser.parse_args())
+if __name__ == '__main__':
+    main(model_launcher_parser.parse_args())

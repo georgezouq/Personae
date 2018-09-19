@@ -1,10 +1,9 @@
 import rqalpha
 
 from rqalpha.api import *
-from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
-from strategy import config
+from strategy.RL.DoubleDQN import config
 from algorithm.RL.DoubleDQN import Algorithm
 from base.env.trader import ActionCode
 from sklearn.preprocessing import StandardScaler
@@ -14,7 +13,7 @@ from sklearn.preprocessing import StandardScaler
 def init(context):
     # context.s1 = '600036.XSHG'
     context.codes_sort = ["600036", "601328", "601998", "601398"]
-    context.codes = ["600036.XSHG", "601328.XSHG", "601998.XSHG", "601398.XSHG"]
+    context.codes = ["600036.XSHG", "601328.XSHG", "601398.XSHG", "601998.XSHG"]
     scale = StandardScaler
     context.has_save_data = False
     context.account_amount = config.get('base').get('accounts').get('stock')
@@ -76,7 +75,7 @@ def handle_bar(context, bar_dict):
         return
 
     c, a, _ = context.algorithm.predict(s)
-    context.algorithm.train()
+    # context.algorithm.live_train()
     # s_next, r, status, info = context.algorithm.env.forward(c, a)
 
     code = c + '.XSHG'
@@ -96,8 +95,11 @@ def after_trading(context):
     pass
 
 
-rqalpha.run_func(init=init,
-                 before_trading=before_trading,
-                 handle_bar=handle_bar,
-                 after_trading=after_trading,
-                 config=config)
+result = rqalpha.run_func(init=init,
+                    before_trading=before_trading,
+                    handle_bar=handle_bar,
+                    after_trading=after_trading,
+                    config=config)
+
+print(result)
+
